@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="pm_green_dark">#1B5E20</color>
+    <color name="pm_green">#2E7D32</color>
+    <color name="pm_green_light">#66BB6A</color>
+    <color name="pm_bg">#F1F8E9</color>
+    <color name="pm_text">#1B2B1B</color>
+    <color name="pm_grey">#6B7B6B</color>
+    <color name="pm_red">#C62828</color>
+</resources>

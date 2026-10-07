@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Light green theme used by every screen (set in AndroidManifest.xml) -->
+    <style name="PantryTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@color/pm_green</item>
+        <item name="colorPrimaryVariant">@color/pm_green_dark</item>
+        <item name="colorOnPrimary">@android:color/white</item>
+        <item name="colorSecondary">@color/pm_green_light</item>
+        <item name="android:statusBarColor">@color/pm_green_dark</item>
+        <item name="android:windowBackground">@color/pm_bg</item>
+    </style>
+
+    <!-- Green gradient button look, reused on every screen -->
+    <style name="PmButton">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/pm_btn_gradient</item>
+        <item name="android:foreground">?attr/selectableItemBackground</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">14dp</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+</resources>
