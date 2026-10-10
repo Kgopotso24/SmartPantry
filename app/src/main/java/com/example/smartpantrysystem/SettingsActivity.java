@@ -9,11 +9,16 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 
-/** Settings screen: your name, expiring-soon alerts toggle, default unit (SharedPreferences). */
+/**
+ * Settings screen: your name, expiring-soon alerts, default unit (saved in SharedPreferences),
+ * plus buttons to load demo data into the pantry or clear it.
+ */
 public class SettingsActivity extends AppCompatActivity {
 
     public static final String PREFS = "pantry_prefs";
@@ -21,11 +26,14 @@ public class SettingsActivity extends AppCompatActivity {
     public static final String KEY_UNIT = "default_unit";
     public static final String KEY_NAME = "user_name";
 
+    private DatabaseHelper db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
+        db = new DatabaseHelper(this);
         NavHelper.applyHeaderInsets(findViewById(R.id.header));
         final SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
 
@@ -72,6 +80,35 @@ public class SettingsActivity extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parent) { }
         });
 
+        // Sample data buttons (both ask for confirmation first)
+        findViewById(R.id.btnLoadSample).setOnClickListener(v -> confirm(
+                "Load sample pantry",
+                "This replaces your current pantry with 15 sample ingredients.",
+                "Load",
+                () -> {
+                    db.loadSamplePantry();
+                    Toast.makeText(this, "Sample pantry loaded", Toast.LENGTH_SHORT).show();
+                }));
+
+        findViewById(R.id.btnClearPantry).setOnClickListener(v -> confirm(
+                "Clear pantry",
+                "Delete every ingredient from your pantry?",
+                "Clear",
+                () -> {
+                    db.clearPantry();
+                    Toast.makeText(this, "Pantry cleared", Toast.LENGTH_SHORT).show();
+                }));
+
         NavHelper.setupBottomNav(this, R.id.nav_settings);
+    }
+
+    /** Shows a Yes/Cancel dialog and runs the action only if the user confirms. */
+    private void confirm(String title, String message, String okLabel, final Runnable action) {
+        new AlertDialog.Builder(this)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(okLabel, (dialog, which) -> action.run())
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 }

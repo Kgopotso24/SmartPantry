@@ -6,9 +6,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -126,6 +129,57 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 c.getDouble(c.getColumnIndexOrThrow("quantity")),
                 c.getString(c.getColumnIndexOrThrow("unit")),
                 c.isNull(expiryCol) ? null : c.getString(expiryCol));
+    }
+
+    /** Deletes every pantry item (used by Settings > Clear pantry). */
+    public void clearPantry() {
+        getWritableDatabase().delete("pantry", null, null);
+    }
+
+    /**
+     * Replaces the pantry with 15 demo ingredients. Four items expire within 2 days and the
+     * mix of quantities means several recipes are makeable while a few are exactly one
+     * ingredient short - handy for demonstrating the strict-matching rule.
+     * Format: {name, quantity, unit, days until expiry (null = no expiry)}
+     */
+    public void loadSamplePantry() {
+        Object[][] samples = {
+                {"Milk", 1.0, "l", 0},
+                {"Tomatoes", 5.0, "pcs", 1},
+                {"Eggs", 6.0, "pcs", 2},
+                {"Chicken", 500.0, "g", 2},
+                {"Bread", 6.0, "pcs", 3},
+                {"Cheese", 200.0, "g", 5},
+                {"Carrots", 4.0, "pcs", 6},
+                {"Butter", 250.0, "g", 9},
+                {"Onions", 3.0, "pcs", null},
+                {"Garlic", 4.0, "pcs", null},
+                {"Potatoes", 6.0, "pcs", null},
+                {"Pasta", 1.0, "kg", null},
+                {"Rice", 2.0, "kg", null},
+                {"Oil", 750.0, "ml", null},
+                {"Salt", 500.0, "g", null}
+        };
+
+        SQLiteDatabase db = getWritableDatabase();
+        db.beginTransaction();
+        try {
+            db.delete("pantry", null, null);
+            for (Object[] s : samples) {
+                String expiry = (s[3] == null) ? null : dateFromToday((Integer) s[3]);
+                addItem((String) s[0], (Double) s[1], (String) s[2], expiry);
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+    }
+
+    /** Today + the given number of days, formatted yyyy-MM-dd. */
+    private String dateFromToday(int days) {
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DAY_OF_MONTH, days);
+        return new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(c.getTime());
     }
 
     // ------------------------------------------------------------------
