@@ -6,4 +6,7 @@
         android:endColor="@color/pm_green_light"
         android:startColor="@color/pm_green_dark"
         android:type="linear" />
+    <corners
+        android:bottomLeftRadius="28dp"
+        android:bottomRightRadius="28dp" />
 </shape>
