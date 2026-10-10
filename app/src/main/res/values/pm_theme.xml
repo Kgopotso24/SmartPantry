@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Light green theme used by every screen (set in AndroidManifest.xml) -->
+    <!-- Light theme: every screen sits on a white-to-mint linear gradient -->
     <style name="PantryTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/pm_green</item>
         <item name="colorPrimaryVariant">@color/pm_green_dark</item>
         <item name="colorOnPrimary">@android:color/white</item>
         <item name="colorSecondary">@color/pm_green_light</item>
-        <item name="android:statusBarColor">@color/pm_green_dark</item>
-        <item name="android:windowBackground">@color/pm_bg</item>
+        <item name="android:statusBarColor">@android:color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowBackground">@drawable/pm_screen_bg</item>
     </style>
 
-    <!-- Green gradient button look, reused on every screen -->
+    <!-- Green gradient button (white text) -->
     <style name="PmButton">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -24,6 +25,36 @@
         <item name="android:textStyle">bold</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
+    </style>
+
+    <!-- Outlined red button (used for destructive actions) -->
+    <style name="PmButtonOutline" parent="PmButton">
+        <item name="android:background">@drawable/pm_btn_outline</item>
+        <item name="android:textColor">@color/pm_red</item>
+    </style>
+
+    <style name="PmTitle">
+        <item name="android:textColor">@color/pm_green_dark</item>
+        <item name="android:textSize">28sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="PmSubtitle">
+        <item name="android:textColor">@color/pm_grey</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="PmLabel">
+        <item name="android:textColor">@color/pm_green_dark</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="PmSectionLabel">
+        <item name="android:textColor">@color/pm_grey</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.1</item>
     </style>
 
 </resources>

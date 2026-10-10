@@ -13,4 +13,6 @@
     <color name="pm_soon_border">#E9C46A</color>
     <color name="pm_amber">#9A5B00</color>
     <color name="pm_amber_chip">#FDE8C0</color>
+    <color name="pm_screen_end">#D9EEDF</color>
+    <color name="pm_glass">#33FFFFFF</color>
 </resources>
