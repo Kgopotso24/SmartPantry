@@ -13,7 +13,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 /** Small helper shared by all screens: bottom navigation bar + status-bar spacing. */
 public class NavHelper {
 
-    /** Wires up the bottom navigation bar (Pantry / Recipes / Settings) using Intents. */
+    /** Wires up the bottom navigation bar (Home / Pantry / Recipes / Settings) using Intents. */
     public static void setupBottomNav(final Activity activity, final int selectedId) {
         BottomNavigationView nav = activity.findViewById(R.id.bottom_nav);
         nav.setSelectedItemId(selectedId);
@@ -25,10 +25,12 @@ public class NavHelper {
             }
 
             Intent intent;
-            if (id == R.id.nav_pantry) {
-                // go back to the existing Pantry screen instead of stacking a new one
-                intent = new Intent(activity, MainActivity.class);
+            if (id == R.id.nav_home) {
+                // go back to the existing Home screen instead of stacking a new one
+                intent = new Intent(activity, HomeActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            } else if (id == R.id.nav_pantry) {
+                intent = new Intent(activity, MainActivity.class);
             } else if (id == R.id.nav_recipes) {
                 intent = new Intent(activity, SuggestedActivity.class);
             } else {
@@ -37,8 +39,8 @@ public class NavHelper {
 
             activity.startActivity(intent);
             activity.overridePendingTransition(0, 0);
-            if (selectedId != R.id.nav_pantry) {
-                activity.finish(); // Pantry stays underneath as the "home" screen
+            if (selectedId != R.id.nav_home) {
+                activity.finish(); // Home stays underneath as the "root" screen
             }
             return true;
         });

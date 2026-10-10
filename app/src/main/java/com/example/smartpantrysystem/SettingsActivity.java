@@ -2,20 +2,24 @@ package com.example.smartpantrysystem;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.Spinner;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 
-/** Screen 5: settings (expiring-soon alerts toggle + default unit). Saved in SharedPreferences. */
+/** Settings screen: your name, expiring-soon alerts toggle, default unit (SharedPreferences). */
 public class SettingsActivity extends AppCompatActivity {
 
     public static final String PREFS = "pantry_prefs";
     public static final String KEY_ALERTS = "expiry_alerts";
     public static final String KEY_UNIT = "default_unit";
+    public static final String KEY_NAME = "user_name";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +28,22 @@ public class SettingsActivity extends AppCompatActivity {
 
         NavHelper.applyHeaderInsets(findViewById(R.id.header));
         final SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
+
+        // Name shown in the Home greeting (saved as you type)
+        EditText etUserName = findViewById(R.id.etUserName);
+        etUserName.setText(prefs.getString(KEY_NAME, ""));
+        etUserName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) { }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                prefs.edit().putString(KEY_NAME, s.toString().trim()).apply();
+            }
+        });
 
         // Switch: expiring-soon alerts
         SwitchCompat swAlerts = findViewById(R.id.swAlerts);

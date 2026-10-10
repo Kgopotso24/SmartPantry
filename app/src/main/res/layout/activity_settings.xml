@@ -29,6 +29,23 @@
         android:orientation="vertical"
         android:padding="20dp">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Your name"
+            android:textColor="@color/pm_text"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/etUserName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="26dp"
+            android:hint="Shown in the Home greeting"
+            android:inputType="textPersonName|textCapWords"
+            android:singleLine="true" />
+
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/swAlerts"
             android:layout_width="match_parent"
