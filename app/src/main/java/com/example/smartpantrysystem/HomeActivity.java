@@ -98,6 +98,9 @@ public class HomeActivity extends AppCompatActivity {
                         .append(item.getUnit()).append(") \u2022 ")
                         .append(dueText(item.daysUntilExpiry())).append("\n");
             }
+            if (soon.size() > 3) {
+                lines.append("+").append(soon.size() - 3).append(" more");
+            }
             tvSoonList.setText(lines.toString().trim());
         }
 
