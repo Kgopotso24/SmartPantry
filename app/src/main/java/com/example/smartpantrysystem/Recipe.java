@@ -10,6 +10,7 @@ public class Recipe {
     private final String name;
     private final String steps;
     private final List<RecipeIngredient> ingredients = new ArrayList<>();
+    private boolean custom; // true when the user created this recipe themselves
 
     public Recipe(int id, String name, String steps) {
         this.id = id;
@@ -21,6 +22,9 @@ public class Recipe {
     public String getName() { return name; }
     public String getSteps() { return steps; }
     public List<RecipeIngredient> getIngredients() { return ingredients; }
+
+    public boolean isCustom() { return custom; }
+    public void setCustom(boolean custom) { this.custom = custom; }
 
     public void addIngredient(RecipeIngredient ingredient) {
         ingredients.add(ingredient);

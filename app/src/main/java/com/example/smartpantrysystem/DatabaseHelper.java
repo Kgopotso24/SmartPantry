@@ -21,7 +21,7 @@ import java.util.Map;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "smart_pantry.db";
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 2;
 
     public DatabaseHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -45,7 +45,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE recipes ("
                 + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + "name TEXT NOT NULL, "
-                + "steps TEXT NOT NULL)");
+                + "steps TEXT NOT NULL, "
+                + "is_custom INTEGER NOT NULL DEFAULT 0)");
 
         db.execSQL("CREATE TABLE recipe_ingredients ("
                 + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -60,10 +61,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS recipe_ingredients");
-        db.execSQL("DROP TABLE IF EXISTS recipes");
-        db.execSQL("DROP TABLE IF EXISTS pantry");
-        onCreate(db);
+        // Version 2 added user-created recipes. ALTER keeps the existing pantry and recipes.
+        if (oldVersion < 2) {
+            db.execSQL("ALTER TABLE recipes ADD COLUMN is_custom INTEGER NOT NULL DEFAULT 0");
+        }
     }
 
     // ------------------------------------------------------------------
@@ -194,9 +195,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor rc = db.query("recipes", null, null, null, null, null, "name ASC");
         while (rc.moveToNext()) {
             int id = rc.getInt(rc.getColumnIndexOrThrow("id"));
-            recipes.put(id, new Recipe(id,
+            Recipe recipe = new Recipe(id,
                     rc.getString(rc.getColumnIndexOrThrow("name")),
-                    rc.getString(rc.getColumnIndexOrThrow("steps"))));
+                    rc.getString(rc.getColumnIndexOrThrow("steps")));
+            recipe.setCustom(rc.getInt(rc.getColumnIndexOrThrow("is_custom")) == 1);
+            recipes.put(id, recipe);
         }
         rc.close();
 
@@ -223,6 +226,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             recipe = new Recipe(id,
                     rc.getString(rc.getColumnIndexOrThrow("name")),
                     rc.getString(rc.getColumnIndexOrThrow("steps")));
+            recipe.setCustom(rc.getInt(rc.getColumnIndexOrThrow("is_custom")) == 1);
         }
         rc.close();
 
@@ -235,6 +239,39 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             ic.close();
         }
         return recipe;
+    }
+
+    /** CREATE a recipe written by the user (stored with its ingredients in one transaction). */
+    public long addCustomRecipe(String name, String steps, List<RecipeIngredient> ingredients) {
+        SQLiteDatabase db = getWritableDatabase();
+        long recipeId = -1;
+        db.beginTransaction();
+        try {
+            ContentValues recipe = new ContentValues();
+            recipe.put("name", name);
+            recipe.put("steps", steps);
+            recipe.put("is_custom", 1);
+            recipeId = db.insert("recipes", null, recipe);
+
+            for (RecipeIngredient ing : ingredients) {
+                ContentValues row = new ContentValues();
+                row.put("recipe_id", recipeId);
+                row.put("name", ing.getName());
+                row.put("quantity", ing.getQuantity());
+                row.put("unit", ing.getUnit());
+                db.insert("recipe_ingredients", null, row);
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+        return recipeId;
+    }
+
+    /** DELETE a user-created recipe (the 18 built-in recipes are protected). */
+    public int deleteRecipe(int id) {
+        return getWritableDatabase().delete("recipes", "id = ? AND is_custom = 1",
+                new String[]{String.valueOf(id)});
     }
 
     /** Every distinct ingredient name used by the recipes (used for auto-complete hints). */

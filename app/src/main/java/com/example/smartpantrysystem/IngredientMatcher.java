@@ -1,5 +1,6 @@
 package com.example.smartpantrysystem;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -25,10 +26,14 @@ public class IngredientMatcher {
 
     /** Returns true only if the pantry covers every ingredient of the recipe. */
     public static boolean canMake(Recipe recipe, List<PantryItem> pantry) {
-        if (recipe.getIngredients().isEmpty()) {
-            return false;
-        }
+        return !recipe.getIngredients().isEmpty() && missing(recipe, pantry).isEmpty();
+    }
 
+    /**
+     * Names of the recipe ingredients the pantry does NOT cover (empty list = can make it).
+     * Used by canMake() and by the "All recipes" / "Almost there" views.
+     */
+    public static List<String> missing(Recipe recipe, List<PantryItem> pantry) {
         // Step 1: total up what we have, per normalised ingredient name
         Map<String, double[]> stock = new HashMap<>();
         for (PantryItem item : pantry) {
@@ -41,28 +46,30 @@ public class IngredientMatcher {
             totals[category(item.getUnit())] += toBase(item.getQuantity(), item.getUnit());
         }
 
-        // Step 2: every recipe ingredient must be covered
+        // Step 2: check every recipe ingredient against the totals
+        List<String> missing = new ArrayList<>();
         for (RecipeIngredient needed : recipe.getIngredients()) {
             double[] have = stock.get(normalise(needed.getName()));
+            boolean covered;
             if (have == null) {
-                return false; // ingredient not in the pantry at all
-            }
-
-            int cat = category(needed.getUnit());
-            double required = toBase(needed.getQuantity(), needed.getUnit());
-
-            if (have[cat] > 0) {
-                if (have[cat] + 0.0001 < required) {
-                    return false; // we have it, but not enough
+                covered = false; // ingredient not in the pantry at all
+            } else {
+                int cat = category(needed.getUnit());
+                double required = toBase(needed.getQuantity(), needed.getUnit());
+                if (have[cat] > 0) {
+                    covered = have[cat] + 0.0001 >= required; // enough quantity?
+                } else {
+                    // The pantry has this ingredient but measured in a different kind of
+                    // unit (e.g. salt in grams, recipe in teaspoons). Grams and millilitres
+                    // cannot be converted without density data, so we accept it as present.
+                    covered = have[WEIGHT] + have[VOLUME] + have[COUNT] > 0;
                 }
-            } else if (have[WEIGHT] + have[VOLUME] + have[COUNT] <= 0) {
-                return false;
             }
-            // else: the pantry has this ingredient but measured in a different kind of
-            // unit (e.g. salt in grams, recipe in teaspoons). Grams and millilitres cannot
-            // be converted without density data, so we accept it as "present".
+            if (!covered) {
+                missing.add(needed.getName());
+            }
         }
-        return true;
+        return missing;
     }
 
     /** Lower-cases, trims and turns plural words into singular ("Tomatoes " -> "tomato"). */
