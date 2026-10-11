@@ -21,6 +21,7 @@
         <activity android:name=".MainActivity" android:exported="false" />
 
         <activity android:name=".AddEditActivity" android:exported="false" />
+        <activity android:name=".AddRecipeActivity" android:exported="false" />
         <activity android:name=".SuggestedActivity" android:exported="false" />
         <activity android:name=".RecipeDetailActivity" android:exported="false" />
         <activity android:name=".SettingsActivity" android:exported="false" />
