@@ -83,7 +83,7 @@ public class SettingsActivity extends AppCompatActivity {
         // Sample data buttons (both ask for confirmation first)
         findViewById(R.id.btnLoadSample).setOnClickListener(v -> confirm(
                 "Load sample pantry",
-                "This replaces your current pantry with 15 sample ingredients.",
+                "This replaces your current pantry with 17 sample ingredients.",
                 "Load",
                 () -> {
                     db.loadSamplePantry();

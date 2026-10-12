@@ -21,7 +21,7 @@ import java.util.Map;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "smart_pantry.db";
-    private static final int DB_VERSION = 2;
+    private static final int DB_VERSION = 3;
 
     public DatabaseHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -57,6 +57,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + "FOREIGN KEY (recipe_id) REFERENCES recipes(id) ON DELETE CASCADE)");
 
         seedRecipes(db); // pre-load the recipe collection on first run
+        seedExtraRecipes(db);
     }
 
     @Override
@@ -64,6 +65,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // Version 2 added user-created recipes. ALTER keeps the existing pantry and recipes.
         if (oldVersion < 2) {
             db.execSQL("ALTER TABLE recipes ADD COLUMN is_custom INTEGER NOT NULL DEFAULT 0");
+        }
+        // Version 3 added 7 more well-known meals (pizza, burger, curry...) for the Suggestions screen
+        if (oldVersion < 3) {
+            seedExtraRecipes(db);
         }
     }
 
@@ -138,7 +143,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * Replaces the pantry with 15 demo ingredients. Four items expire within 2 days and the
+     * Replaces the pantry with 17 demo ingredients. Four items expire within 2 days and the
      * mix of quantities means several recipes are makeable while a few are exactly one
      * ingredient short - handy for demonstrating the strict-matching rule.
      * Format: {name, quantity, unit, days until expiry (null = no expiry)}
@@ -159,7 +164,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 {"Pasta", 1.0, "kg", null},
                 {"Rice", 2.0, "kg", null},
                 {"Oil", 750.0, "ml", null},
-                {"Salt", 500.0, "g", null}
+                {"Salt", 500.0, "g", null},
+                {"Flour", 1.0, "kg", null},
+                {"Baking powder", 100.0, "g", null}
         };
 
         SQLiteDatabase db = getWritableDatabase();
@@ -423,6 +430,60 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         + "3. Blend until smooth.\n"
                         + "4. Pour into a glass and enjoy.",
                 "banana|2|pcs", "milk|250|ml", "sugar|1|tbsp");
+    }
+
+    /** 7 extra well-known meals, so users can ask for things like "pizza" or "burger". */
+    private void seedExtraRecipes(SQLiteDatabase db) {
+        addRecipe(db, "Pizza",
+                "1. Mix the flour, yeast, salt and 1 tbsp oil with 180 ml warm water into a dough.\n"
+                        + "2. Knead for 8 minutes and rest for 1 hour until doubled.\n"
+                        + "3. Blend the tomatoes with a pinch of salt for the sauce.\n"
+                        + "4. Roll out the dough, spread the sauce and top with the cheese.\n"
+                        + "5. Bake at 220 C for 12-15 minutes until golden.",
+                "flour|300|g", "yeast|2|tsp", "oil|2|tbsp", "salt|1|tsp", "tomato|3|pcs", "cheese|150|g");
+
+        addRecipe(db, "Beef Burger",
+                "1. Mix the beef mince with the chopped onion and salt.\n"
+                        + "2. Shape into 4 patties.\n"
+                        + "3. Fry in the oil for 5 minutes each side.\n"
+                        + "4. Top with the cheese, and serve in the buns.",
+                "beef mince|400|g", "bun|4|pcs", "onion|1|pcs", "cheese|80|g", "salt|1|tsp", "oil|1|tbsp");
+
+        addRecipe(db, "Spaghetti Bolognese",
+                "1. Boil the pasta in salted water and drain.\n"
+                        + "2. Fry the onion and garlic in the oil, then brown the beef mince.\n"
+                        + "3. Add the chopped tomatoes and salt; simmer for 25 minutes.\n"
+                        + "4. Serve the sauce over the pasta.",
+                "pasta|250|g", "beef mince|300|g", "tomato|4|pcs", "onion|1|pcs", "garlic|2|pcs",
+                "oil|1|tbsp", "salt|1|tsp");
+
+        addRecipe(db, "Macaroni Cheese",
+                "1. Boil the pasta in salted water and drain.\n"
+                        + "2. Melt the butter, stir in the flour for 1 minute, then whisk in the milk.\n"
+                        + "3. Simmer until thick, then stir in the cheese.\n"
+                        + "4. Mix with the pasta and serve.",
+                "pasta|250|g", "cheese|150|g", "milk|300|ml", "butter|30|g", "flour|30|g", "salt|1|tsp");
+
+        addRecipe(db, "Chicken Curry",
+                "1. Fry the chopped onions and garlic in the oil until soft.\n"
+                        + "2. Stir in the curry powder for 1 minute.\n"
+                        + "3. Add the chicken and brown it, then add the tomatoes and salt.\n"
+                        + "4. Simmer for 25 minutes and serve.",
+                "chicken|400|g", "onion|2|pcs", "tomato|2|pcs", "garlic|3|pcs",
+                "curry powder|2|tbsp", "oil|2|tbsp", "salt|1|tsp");
+
+        addRecipe(db, "Chicken Wraps",
+                "1. Slice the chicken and fry in the oil with the salt until cooked.\n"
+                        + "2. Slice the onion and tomato.\n"
+                        + "3. Warm the tortillas.\n"
+                        + "4. Fill with chicken, onion and tomato, then roll up.",
+                "chicken|300|g", "tortilla|4|pcs", "tomato|1|pcs", "onion|1|pcs", "oil|1|tbsp", "salt|1|tsp");
+
+        addRecipe(db, "Garlic Bread",
+                "1. Mash the butter with the crushed garlic.\n"
+                        + "2. Spread over the slices of bread.\n"
+                        + "3. Bake at 200 C for 8 minutes until golden.",
+                "bread|4|pcs", "butter|40|g", "garlic|3|pcs");
     }
 
     private void addRecipe(SQLiteDatabase db, String name, String steps, String... ingredients) {
