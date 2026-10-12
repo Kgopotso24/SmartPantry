@@ -63,7 +63,7 @@ public class HomeActivity extends AppCompatActivity {
         // Intents to the other screens
         findViewById(R.id.tileIngredients).setOnClickListener(v -> open(MainActivity.class));
         findViewById(R.id.tileSoon).setOnClickListener(v -> open(MainActivity.class));
-        findViewById(R.id.tileReady).setOnClickListener(v -> open(SuggestedActivity.class));
+        findViewById(R.id.tileReady).setOnClickListener(v -> open(SuggestionsActivity.class));
         findViewById(R.id.btnQuickIngredient).setOnClickListener(v -> open(AddEditActivity.class));
         findViewById(R.id.btnQuickRecipe).setOnClickListener(v -> open(AddRecipeActivity.class));
         findViewById(R.id.cardAlmost).setOnClickListener(v -> {

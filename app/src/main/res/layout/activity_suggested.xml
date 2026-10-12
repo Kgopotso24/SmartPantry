@@ -16,10 +16,22 @@
         android:paddingBottom="8dp">
 
         <TextView
+            android:id="@+id/tvBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:paddingBottom="6dp"
+            android:text="&#8249; Back"
+            android:textColor="@color/pm_green"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
             style="@style/PmTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Recipes" />
+            android:text="All Recipes" />
 
         <TextView
             android:id="@+id/tvSummary"
@@ -94,15 +106,5 @@
         style="@style/PmButton"
         android:layout_margin="14dp"
         android:text="+ New recipe" />
-
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_nav"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/white"
-        app:itemIconTint="@color/pm_nav_colors"
-        app:itemTextColor="@color/pm_nav_colors"
-        app:labelVisibilityMode="labeled"
-        app:menu="@menu/pm_bottom_nav" />
 
 </LinearLayout>

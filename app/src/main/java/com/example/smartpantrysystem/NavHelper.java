@@ -32,7 +32,7 @@ public class NavHelper {
             } else if (id == R.id.nav_pantry) {
                 intent = new Intent(activity, MainActivity.class);
             } else if (id == R.id.nav_recipes) {
-                intent = new Intent(activity, SuggestedActivity.class);
+                intent = new Intent(activity, SuggestionsActivity.class);
             } else {
                 intent = new Intent(activity, SettingsActivity.class);
             }

@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Recipes screen with two clearly separated views:
+ * Browse screen (opened from Suggestions) with two clearly separated views:
  *  - "Can make now": ONLY recipes the pantry fully covers (the strict-matching rule)
  *  - "All recipes": every recipe, with what is missing (ready ones first)
  */
@@ -59,7 +59,7 @@ public class SuggestedActivity extends AppCompatActivity {
         findViewById(R.id.btnNewRecipe).setOnClickListener(v ->
                 startActivity(new Intent(SuggestedActivity.this, AddRecipeActivity.class)));
 
-        NavHelper.setupBottomNav(this, R.id.nav_recipes);
+        findViewById(R.id.tvBack).setOnClickListener(v -> finish());
     }
 
     @Override
